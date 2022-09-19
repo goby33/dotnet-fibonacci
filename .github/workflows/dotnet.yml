@@ -29,5 +29,5 @@ jobs:
     - name: Upload WebApp1 Build Artifact
       uses: actions/upload-artifact@v2
       with: 
-        name: Publish win-x64 Fibonacci    
-        path: ./win-x64/fibonacci
+        name: Publish osx-x64 Fibonacci    
+        path: ./osx-x64/fibonacci
