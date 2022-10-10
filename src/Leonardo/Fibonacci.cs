@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Leonardo;
 
@@ -13,23 +9,25 @@ public record FiboData
     public bool IsFromCache { get; set; }
 }
 
-public  class Fibonacci
+public class Fibonacci
 {
-    
-    private readonly FibonacciDataContext _fibonacciDataContext;       
-    public Fibonacci(FibonacciDataContext fibonacciDataContext) {           
-        _fibonacciDataContext = fibonacciDataContext;       
+    private readonly FibonacciDataContext _fibonacciDataContext;
+
+    public Fibonacci(FibonacciDataContext fibonacciDataContext)
+    {
+        _fibonacciDataContext = fibonacciDataContext;
     }
-    
+
     public static int Run(int i)
     {
         if (i <= 2) return 1;
         return Run(i - 1) + Run(i - 2);
-    }    
-    
-    public async Task<List<long>> RunAsync(string[] args)    {          
+    }
+
+    public async Task<List<long>> RunAsync(string[] args)
+    {
         var tasks = new List<Task<FiboData>>();
-        
+
         foreach (var arg in args)
         {
             var int32 = Convert.ToInt32(arg);
@@ -42,7 +40,7 @@ public  class Fibonacci
                 {
                     return new FiboData
                     {
-                        Output = Fibonacci.Run(int32),
+                        Output = Run(int32),
                         Input = int32,
                         IsFromCache = false
                     };
@@ -61,24 +59,20 @@ public  class Fibonacci
         }
 
         Task.WaitAll(tasks.ToArray());
-            
-        var results = tasks.Select(t=>t.Result).ToList();
+
+        var results = tasks.Select(t => t.Result).ToList();
 
         foreach (var result in results)
-        {
             if (!result.IsFromCache)
-            {
-                _fibonacciDataContext.TFibonaccis.Add(new TFibonacci()
+                _fibonacciDataContext.TFibonaccis.Add(new TFibonacci
                 {
                     FibOutput = result.Output,
                     FibCreatedTimestamp = DateTime.Now,
-                    FibInput = result.Input,
+                    FibInput = result.Input
                 });
-            }
-        }
 
         await _fibonacciDataContext.SaveChangesAsync();
 
         return results.Select(r => r.Output).ToList();
-    }     
+    }
 }

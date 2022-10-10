@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+
 namespace Leonardo.Tests;
 
 public class UnitTestFibonacci
@@ -11,7 +12,7 @@ public class UnitTestFibonacci
         builder.UseInMemoryDatabase(dataBaseName);
         var options = builder.Options;
         var fibonacciDataContext = new FibonacciDataContext(options);
-        await fibonacciDataContext.Database.EnsureCreatedAsync(); 
+        await fibonacciDataContext.Database.EnsureCreatedAsync();
 
         var result = await new Fibonacci(fibonacciDataContext).RunAsync(new[] { "6" });
         Assert.Equal(8, result[0]);
